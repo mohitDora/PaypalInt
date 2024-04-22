@@ -40,6 +40,8 @@ function CardLayout() {
       setClicked(false)
     }
     if (couponCode !== 'DISCOUNT20') {
+      setOrderAmount(1)
+      setClicked(true)
       setCouponMsg("Invalid Code")
     }
   };
@@ -58,13 +60,15 @@ function CardLayout() {
       });
   };
   const createOrder = (data, actions) => {
-    console.log(orderAmount)
+    console.log(isChecked)
+    const calculatedOrderAmount = isChecked ? orderAmount : 1;
+    console.log(calculatedOrderAmount)
     return actions.order.create({
       purchase_units: [
         {
           amount: {
 
-            value: orderAmount.toFixed(2),
+            value: calculatedOrderAmount.toFixed(2),
           },
         },
       ],
@@ -77,10 +81,10 @@ function CardLayout() {
       alert("Transaction completed by " + details.payer.name.given_name);
 
       await addDoc(collection(db, "payments"), {
-        payer: details.payer.name.given_name,
-        amount: details.purchase_units[0].amount.value,
-        currency: details.purchase_units[0].amount.currency_code,
-        timestamp: db.firestore.FieldValue.serverTimestamp(),
+        payer: details?.payer.name.given_name,
+        amount: details?.purchase_units[0].amount.value,
+        currency: details?.purchase_units[0].amount.currency_code,
+        timestamp: db?.firestore.FieldValue.serverTimestamp(),
       });
 
       console.log("Transaction details saved to Firestore");
